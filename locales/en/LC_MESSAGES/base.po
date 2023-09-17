@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR ORGANIZATION
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"POT-Creation-Date: 2023-09-17 20:44+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: main.py:27
+msgid "Winsetup Script"
+msgstr ""
+
+#: main.py:69
+msgid ""
+"Are you sure you want to restart explorer.exe?\n"
+"Restarting explorer.exe will close all open explorer windows."
+msgstr ""
+"Are you sure you want to restart explorer.exe?\n"
+"Restarting explorer.exe will close all open explorer windows."
+
+#: main.py:69 main.py:138
+msgid "Restart explorer.exe"
+msgstr "Restart explorer.exe"
+
+#: main.py:90
+msgid "Winget is already installed."
+msgstr "Winget is already installed."
+
+#: main.py:129
+msgid "Enable keyboard shortcut for the command prompt"
+msgstr "Enable keyboard shortcut for the command prompt"
+
+#: main.py:132
+msgid "Setup various registry keys"
+msgstr "Setup various registry keys"
+
+#: main.py:134
+msgid ""
+"Disables wallpaper JPEG compression\n"
+"If 'I'm running Windows 11' is checked, this will enable compact mode in Explorer, and the legacy context menu."
+msgstr ""
+"Disables wallpaper JPEG compression\n"
+"If 'I'm running Windows 11' is checked, this will enable compact mode in Explorer, and the legacy context menu."
+
+#: main.py:135
+msgid "I'm running Windows 11"
+msgstr "I'm running Windows 11"
+
+#: main.py:141
+msgid "Open the UAC control panel"
+msgstr "Open the UAC control panel"
+
+#: main.py:144
+msgid "Install Winget"
+msgstr "Install Winget"
+
+#: main.py:146
+msgid "Checks if winget is installed, and if not, this opens a window, which lets you install it."
+msgstr "Checks if winget is installed, and if not, this opens a window, which lets you install it."
+
+#: main.py:149
+msgid "Applications"
+msgstr "Applications"
+
+#: main.py:163
+msgid "Additional Packages"
+msgstr "Additional Packages"
+
+#: main.py:168
+msgid "Install applications"
+msgstr "Install applications"
+

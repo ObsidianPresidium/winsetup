@@ -6,6 +6,8 @@ import time
 import tkinter as tk
 import tkinter.messagebox as tkmsg
 from idlelib.tooltip import Hovertip
+import gettext
+import locale
 
 pyversion = "3.11"
 
@@ -20,8 +22,22 @@ apps = [
     ["Simplenote", "Automattic.Simplenote", 1]
 ]
 
+bundle_dir = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
+locales_dir = os.path.abspath(os.path.join(bundle_dir, "locales"))
+windll = ctypes.windll.kernel32
+iso_language = locale.windows_locale[windll.GetUserDefaultUILanguage()]
+
+if "da" in iso_language:
+    language = gettext.translation("base", localedir=locales_dir, languages=["da"])
+    language.install()
+    _ = language.gettext
+else:
+    language = gettext.translation("base", localedir=locales_dir, languages=["en"])
+    language.install()
+    _ = language.gettext
+
 main_window = tk.Tk()
-main_window.title("Winsetup script")
+main_window.title(_("Winsetup Script"))
 padx = 8
 pady = 4
 current_row = 0
@@ -63,7 +79,7 @@ def set_registry_keys(os_version):
 
 
 def restart_explorer(tkwindow):
-    answer = tkmsg.askyesno(title="Genstart explorer.exe", parent=tkwindow, message="Er du sikker på at du vil genstarte explorer.exe?\nGenstart af explorer.exe vil medfølge, at alle åbne explorer-vinduer vil forsvinde.")
+    answer = tkmsg.askyesno(title=_("Restart explorer.exe"), parent=tkwindow, message=_("Are you sure you want to restart explorer.exe?\nRestarting explorer.exe will close all open explorer windows."))
     if not answer:
         return 0
 
@@ -84,7 +100,7 @@ def install_winget():
         while not check_winget():
             time.sleep(1)
     else:
-        print("Winget er i forvejen installeret.")
+        print(_("Winget is already installed."))
 
     return 0
 
@@ -123,27 +139,27 @@ container_frame = tk.Frame(main_window)
 container_frame.grid(row=0, padx=padx, pady=pady)
 container_frame.pack(fill="both", expand=True, padx=padx, pady=pady)
 
-create_cmd_hotkey_button = tk.Button(container_frame, text="Aktivér tastaturgenvej til kommandoprompten", command=create_cmd_hotkey)
+create_cmd_hotkey_button = tk.Button(container_frame, text=_("Enable keyboard shortcut for the command prompt"), command=create_cmd_hotkey)
 create_cmd_hotkey_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
-set_registry_keys_button = tk.Button(container_frame, text="Opsæt diverse registreringsnøgler", command=lambda: set_registry_keys(11 if running_win_11.get() == 1 else 10))
+set_registry_keys_button = tk.Button(container_frame, text=_("Setup various registry keys"), command=lambda: set_registry_keys(11 if running_win_11.get() == 1 else 10))
 set_registry_keys_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
-set_registry_keys_tooltip = Hovertip(set_registry_keys_button, "Deaktiverer JPEG kompression for baggrundsbilledet.\nHvis 'Jeg kører Windows 11' er aktiveret, aktiverer denne kompakt tilstand i Explorer, og legacy context menu.")
-set_registry_keys_checkbox = tk.Checkbutton(container_frame, text="Jeg kører Windows 11", variable=running_win_11, onvalue=1, offvalue=0)
+set_registry_keys_tooltip = Hovertip(set_registry_keys_button, _("Disables wallpaper JPEG compression\nIf 'I'm running Windows 11' is checked, this will enable compact mode in Explorer, and the legacy context menu."))
+set_registry_keys_checkbox = tk.Checkbutton(container_frame, text=_("I'm running Windows 11"), variable=running_win_11, onvalue=1, offvalue=0)
 set_registry_keys_checkbox.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
-restart_explorer_button = tk.Button(container_frame, text="Genstart explorer.exe", command=lambda: restart_explorer(main_window))
+restart_explorer_button = tk.Button(container_frame, text=_("Restart explorer.exe"), command=lambda: restart_explorer(main_window))
 restart_explorer_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
-open_uac_button = tk.Button(container_frame, text="Åbn UAC-kontrolpanelet", command=open_uac)
+open_uac_button = tk.Button(container_frame, text=_("Open the UAC control panel"), command=open_uac)
 open_uac_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
-install_winget_button = tk.Button(container_frame, text="Installér Winget", command=install_winget)
+install_winget_button = tk.Button(container_frame, text=_("Install Winget"), command=install_winget)
 install_winget_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
-install_winget_tooltip = Hovertip(install_winget_button, "Tjekker, om winget i forvejen er installeret, og hvis ikke, åbner denne et vindue, der lader en installere det.")
+install_winget_tooltip = Hovertip(install_winget_button, _("Checks if winget is installed, and if not, this opens a window, which lets you install it."))
 
 
-apps_frame = tk.LabelFrame(container_frame, text="Programmer")
+apps_frame = tk.LabelFrame(container_frame, text=_("Applications"))
 apps_frame.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
 apps_gui_widgets = []
@@ -157,12 +173,12 @@ for i in enumerate(apps):
 
 row_after_apps = len(apps_gui_widgets)
 
-additional_packages_label = tk.Label(apps_frame, text="Øvrige pakker")
+additional_packages_label = tk.Label(apps_frame, text=_("Additional Packages"))
 additional_packages_label.grid(row=row_after_apps, padx=padx, pady=pady)
 additional_packages_area = tk.Text(apps_frame, height=5, width=30, wrap="none")
 additional_packages_area.grid(sticky="w", row=row_after_apps+1, padx=padx, pady=pady)
 
-apps_install_button = tk.Button(apps_frame, text="Installér programmer", command=lambda: install_apps(interpret_apps_checkboxes(apps_gui_widgets), additional_packages_area))
+apps_install_button = tk.Button(apps_frame, text=_("Install applications"), command=lambda: install_apps(interpret_apps_checkboxes(apps_gui_widgets), additional_packages_area))
 apps_install_button.grid(row=row_after_apps+2, padx=padx, pady=pady)
 
 
