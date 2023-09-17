@@ -1,0 +1,78 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: 1.0\n"
+"POT-Creation-Date: 2023-09-17 20:44+0200\n"
+"PO-Revision-Date: 2023-09-17 20:50+0200\n"
+"Last-Translator: ObsidianPresidum <emil@aarestrup.nu>\n"
+"Language-Team: Danish <emil@aarestrup.nu>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=cp1252\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: pygettext.py 1.5\n"
+
+
+#: main.py:27
+msgid "Winsetup Script"
+msgstr "Winsetup script"
+
+#: main.py:69
+msgid ""
+"Are you sure you want to restart explorer.exe?\n"
+"Restarting explorer.exe will close all open explorer windows."
+msgstr ""
+"Er du sikker p\u00e5 at du vil genstarte explorer.exe?\n"
+"Genstart af explorer.exe vil medf\u00f8lge, at alle \u00e5bne explorer-vinduer vil forsvinde."
+
+#: main.py:69 main.py:138
+msgid "Restart explorer.exe"
+msgstr "Genstart explorer.exe"
+
+#: main.py:90
+msgid "Winget is already installed."
+msgstr "Winget er i forvejen installeret."
+
+#: main.py:129
+msgid "Enable keyboard shortcut for the command prompt"
+msgstr "Aktiv\u00e9r tastaturgenvej til kommandoprompten"
+
+#: main.py:132
+msgid "Setup various registry keys"
+msgstr "Ops\u00e6t diverse registreringsn\u00f8gler"
+
+#: main.py:134
+msgid ""
+"Disables wallpaper JPEG compression\n"
+"If 'I'm running Windows 11' is checked, this will enable compact mode in Explorer, and the legacy context menu."
+msgstr ""
+"Deaktiverer JPEG kompression for baggrundsbilledet.\n"
+"Hvis 'Jeg k\u00f8rer Windows 11' er aktiveret, aktiverer denne kompakt tilstand i Explorer, og legacy context menu."
+
+#: main.py:135
+msgid "I'm running Windows 11"
+msgstr "Jeg k\u00f8rer Windows 11"
+
+#: main.py:141
+msgid "Open the UAC control panel"
+msgstr "\u00c5bn UAC-kontrolpanelet"
+
+#: main.py:144
+msgid "Install Winget"
+msgstr "Install\u00e9r Winget"
+
+#: main.py:146
+msgid "Checks if winget is installed, and if not, this opens a window, which lets you install it."
+msgstr "Tjekker, om winget i forvejen er installeret, og hvis ikke, \u00e5bner denne et vindue, der lader en installere det."
+
+#: main.py:149
+msgid "Applications"
+msgstr "Programmer"
+
+#: main.py:163
+msgid "Additional Packages"
+msgstr "\u00d8vrige pakker"
+
+#: main.py:168
+msgid "Install applications"
+msgstr "Install\u00e9r programmer"
+
