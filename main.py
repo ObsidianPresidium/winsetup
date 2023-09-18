@@ -19,7 +19,8 @@ apps = [
     ["Authy", "Twilio.Authy", 1],
     ["Notepad++", "Notepad++.Notepad++", 1],
     ["Python 3.11", "Python.Python.3.11", 1],
-    ["Simplenote", "Automattic.Simplenote", 1]
+    ["Simplenote", "Automattic.Simplenote", 1],
+    ["Visual Studio Code", "Microsoft.VisualStudioCode", 1]
 ]
 
 bundle_dir = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
@@ -90,6 +91,10 @@ def open_uac():
     subprocess.Popen(["C:/Windows/System32/UserAccountControlSettings.exe"])
 
 
+def open_display_settings():
+    subprocess.Popen(["powershell", "Start-Process", "ms-settings:display"])
+
+
 def check_winget():
     return os.path.exists(f"{os.getenv('LOCALAPPDATA')}/Microsoft/WindowsApps/winget.exe")
 
@@ -109,6 +114,11 @@ def get_row():
     global current_row
     current_row += 1
     return current_row - 1
+
+
+def set_color_mode(desktop, apps):
+    os.system(f"reg.exe add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize\" /f /v SystemUsesLightTheme /t REG_DWORD /d {0 if desktop.get() == 1 else 1}")
+    os.system(f"reg.exe add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize\" /f /v AppsUseLightTheme /t REG_DWORD /d {0 if apps.get() == 1 else 1}")
 
 
 def install_apps(apps_to_install, textarea):
@@ -154,9 +164,23 @@ restart_explorer_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 open_uac_button = tk.Button(container_frame, text=_("Open the UAC control panel"), command=open_uac)
 open_uac_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
+open_display_settings_button = tk.Button(container_frame, text=_("Open display settings"), command=open_display_settings)
+open_display_settings_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
+
 install_winget_button = tk.Button(container_frame, text=_("Install Winget"), command=install_winget)
 install_winget_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 install_winget_tooltip = Hovertip(install_winget_button, _("Checks if winget is installed, and if not, this opens a window, which lets you install it."))
+
+color_mode_frame = tk.LabelFrame(container_frame, text=_("Color mode"))
+color_mode_frame.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
+color_mode_integer_desktop = tk.IntVar(value=1)
+color_mode_checkbox_desktop = tk.Checkbutton(color_mode_frame, text=_("Enable dark mode for the desktop"), variable=color_mode_integer_desktop, onvalue=1, offvalue=0)
+color_mode_checkbox_desktop.grid(sticky="w", row=0, padx=padx, pady=pady)
+color_mode_integer_apps = tk.IntVar(value=0)
+color_mode_checkbox_apps = tk.Checkbutton(color_mode_frame, text=_("Enable dark mode for applications"), variable=color_mode_integer_apps, onvalue=1, offvalue=0)
+color_mode_checkbox_apps.grid(sticky="w", row=1, padx=padx, pady=pady)
+color_mode_apply_button = tk.Button(color_mode_frame, text=_("Apply this color mode"), command=lambda: set_color_mode(color_mode_integer_desktop, color_mode_integer_apps))
+color_mode_apply_button.grid(row=2, padx=padx, pady=pady)
 
 
 apps_frame = tk.LabelFrame(container_frame, text=_("Applications"))
