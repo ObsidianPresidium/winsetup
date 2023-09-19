@@ -110,6 +110,9 @@ def install_winget():
     return 0
 
 
+def install_wsl():
+    subprocess.Popen(["powershell", "wsl", "--install"])
+
 def get_row():
     global current_row
     current_row += 1
@@ -170,6 +173,10 @@ open_display_settings_button.grid(sticky="w", row=get_row(), padx=padx, pady=pad
 install_winget_button = tk.Button(container_frame, text=_("Install Winget"), command=install_winget)
 install_winget_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 install_winget_tooltip = Hovertip(install_winget_button, _("Checks if winget is installed, and if not, this opens a window, which lets you install it."))
+
+install_wsl_button = tk.Button(container_frame, text=_("Install WSL"), command=install_wsl)
+install_wsl_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
+install_wsl_tooltip = Hovertip(install_wsl_button, _("Installs Windows Subsystem for Linux with the default distro, Ubuntu LTS"))
 
 color_mode_frame = tk.LabelFrame(container_frame, text=_("Color mode"))
 color_mode_frame.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
