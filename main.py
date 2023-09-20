@@ -6,7 +6,7 @@ import time
 import tkinter as tk
 import tkinter.messagebox as tkmsg
 from idlelib.tooltip import Hovertip
-import gettext
+from optu import Optu
 import locale
 
 pyversion = "3.11"
@@ -29,13 +29,11 @@ windll = ctypes.windll.kernel32
 iso_language = locale.windows_locale[windll.GetUserDefaultUILanguage()]
 
 if "da" in iso_language:
-    language = gettext.translation("base", localedir=locales_dir, languages=["da"])
-    language.install()
-    _ = language.gettext
+    language = Optu("da")
+    _ = language.get_string
 else:
-    language = gettext.translation("base", localedir=locales_dir, languages=["en"])
-    language.install()
-    _ = language.gettext
+    language = Optu()
+    _ = language.get_string
 
 main_window = tk.Tk()
 main_window.title(_("Winsetup Script"))

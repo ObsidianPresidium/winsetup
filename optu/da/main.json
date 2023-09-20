@@ -1,0 +1,23 @@
+{
+  "0": ["Winsetup Script", "Winsetup script"],
+  "1": ["Are you sure you want to restart explorer.exe?\nRestarting explorer.exe will close all open explorer windows.", "Er du sikker på at du vil genstarte explorer.exe?\nGenstart af explorer.exe vil medføre, at alle åbne explorer-vinduer vil forsvinde."],
+  "2": ["Restart explorer.exe", "Genstart explorer.exe"],
+  "3": ["Winget is already installed.", "Winget er i forvejen installeret."],
+  "4": ["Enable keyboard shortcut for the command prompt", "Aktivér tastaturgenvej til kommandoprompten"],
+  "5": ["Setup various registry keys", "Opsæt diverse registreringsnøgler"],
+  "6": ["Disables wallpaper JPEG compression\nIf 'I'm running Windows 11' is checked, this will enable compact mode in Explorer, and the legacy context menu.", "Deaktiverer JPEG kompression for baggrundsbilledet.\nHvis 'Jeg kører Windows 11' er aktiveret, aktiverer denne kompakt tilstand i explorer, og legacy context menu."],
+  "7": ["I'm running Windows 11", "Jeg kører Windows 11"],
+  "19": ["Open the UAC control panel", "Åbn UAC-kontrolpanelet"],
+  "8": ["Open display settings", "Åbn skærmindstillinger"],
+  "9": ["Install Winget", "Installér Winget"],
+  "20": ["Checks if winget is installed, and if not, this opens a window, which lets you install it.", "Tjekker, om winget i forvejen er installeret, og hvis ikke, åbner denne et vindue, der lader en installere det."],
+  "10": ["Install WSL", "Installér WSL"],
+  "11": ["Installs Windows Subsystem for Linux with the default distro, Ubuntu LTS", "Installerer Windows Subsystem for Linux med standarddistroen, Ubuntu LTS"],
+  "12": ["Color mode", "Farvetilstand"],
+  "13": ["Enable dark mode for the desktop", "Aktivér mørk tilstand for skrivebordet"],
+  "14": ["Enable dark mode for applications", "Aktivér mørk tilstand for programmer"],
+  "15": ["Apply this color mode", "Anvend denne farvetilstand"],
+  "16": ["Applications", "Programmer"],
+  "17": ["Additional Packages", "Øvrige pakker"],
+  "18": ["Install applications", "Installér programmer"]
+}
