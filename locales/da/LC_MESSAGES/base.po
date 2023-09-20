@@ -27,7 +27,7 @@ msgstr ""
 "Er du sikker p\u00e5 at du vil genstarte explorer.exe?\n"
 "Genstart af explorer.exe vil medf\u00f8lge, at alle \u00e5bne explorer-vinduer vil forsvinde."
 
-#: main.py:83 main.py:161
+#: main.py:83 main.py:164
 msgid "Restart explorer.exe"
 msgstr "Genstart explorer.exe"
 
@@ -35,15 +35,15 @@ msgstr "Genstart explorer.exe"
 msgid "Winget is already installed."
 msgstr "Winget er i forvejen installeret."
 
-#: main.py:152
+#: main.py:155
 msgid "Enable keyboard shortcut for the command prompt"
 msgstr "Aktiv\u00e9r tastaturgenvej til kommandoprompten"
 
-#: main.py:155
+#: main.py:158
 msgid "Setup various registry keys"
 msgstr "Ops\u00e6t diverse registreringsn\u00f8gler"
 
-#: main.py:157
+#: main.py:160
 msgid ""
 "Disables wallpaper JPEG compression\n"
 "If 'I'm running Windows 11' is checked, this will enable compact mode in Explorer, and the legacy context menu."
@@ -51,51 +51,59 @@ msgstr ""
 "Deaktiverer JPEG kompression for baggrundsbilledet.\n"
 "Hvis 'Jeg k\u00f8rer Windows 11' er aktiveret, aktiverer denne kompakt tilstand i Explorer, og legacy context menu."
 
-#: main.py:158
+#: main.py:161
 msgid "I'm running Windows 11"
 msgstr "Jeg k\u00f8rer Windows 11"
 
-#: main.py:164
+#: main.py:167
 msgid "Open the UAC control panel"
 msgstr "\u00c5bn UAC-kontrolpanelet"
 
-#: main.py:167
+#: main.py:170
 msgid "Open display settings"
 msgstr "\u00c5bn sk\u00e6rmindstillinger"
 
-#: main.py:170
+#: main.py:173
 msgid "Install Winget"
 msgstr "Install\u00e9r Winget"
 
-#: main.py:172
+#: main.py:175
 msgid "Checks if winget is installed, and if not, this opens a window, which lets you install it."
 msgstr "Tjekker, om winget i forvejen er installeret, og hvis ikke, \u00e5bner denne et vindue, der lader en installere det."
 
-#: main.py:174
+#: main.py:177
+msgid "Install WSL"
+msgstr "Install\u00e9r WSL"
+
+#: main.py:179
+msgid "Installs Windows Subsystem for Linux with the default distro, Ubuntu LTS"
+msgstr "Installerer Windows Subsystem for Linux med standarddistroen, Ubuntu LTS"
+
+#: main.py:181
 msgid "Color mode"
 msgstr "Farvetilstand"
 
-#: main.py:177
+#: main.py:184
 msgid "Enable dark mode for the desktop"
 msgstr "Aktiv\u00e9r m\u00f8rk tilstand for skrivebordet"
 
-#: main.py:180
+#: main.py:187
 msgid "Enable dark mode for applications"
 msgstr "Aktiv\u00e9r m\u00f8rk tilstand for programmer"
 
-#: main.py:182
+#: main.py:189
 msgid "Apply this color mode"
 msgstr "Anvend denne farvetilstand"
 
-#: main.py:186
+#: main.py:193
 msgid "Applications"
 msgstr "Programmer"
 
-#: main.py:200
+#: main.py:207
 msgid "Additional Packages"
 msgstr "\u00d8vrige pakker"
 
-#: main.py:205
+#: main.py:212
 msgid "Install applications"
 msgstr "Install\u00e9r programmer"
 
