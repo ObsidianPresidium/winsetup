@@ -1,10 +1,17 @@
 import json
+import sys
+import os
 
 class Optu:
     def __init__(self, locale="en", filename="main"):
         self.locale = locale
         self.filename = filename
-        with open(f"optu/{locale}/{filename}.json", encoding="utf-8") as f:
+
+        if getattr(sys, "frozen", False):
+            root = sys._MEIPASS
+        else:
+            root = os.path.dirname(os.path.abspath(__file__))
+        with open(f"{root}/optu/{locale}/{filename}.json", encoding="utf-8") as f:
             self.locale_dict = json.loads("".join(f.readlines()))
 
         self.locale_dict_string_as_id = {}
