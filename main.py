@@ -20,11 +20,10 @@ apps = [
     ["Notepad++", "Notepad++.Notepad++", 1],
     ["Python 3.11", "Python.Python.3.11", 1],
     ["Simplenote", "Automattic.Simplenote", 1],
-    ["Visual Studio Code", "Microsoft.VisualStudioCode", 1]
+    ["Visual Studio Code", "Microsoft.VisualStudioCode", 1],
+    ["Adobe Acrobat Reader DC", "Adobe.Acrobat.Reader.64-bit", 0]
 ]
 
-bundle_dir = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
-locales_dir = os.path.abspath(os.path.join(bundle_dir, "locales"))
 windll = ctypes.windll.kernel32
 iso_language = locale.windows_locale[windll.GetUserDefaultUILanguage()]
 
@@ -49,6 +48,21 @@ def is_admin():
         return False
 
 
+is_admin = is_admin()
+
+
+def as_admin(exe, args=None):
+    if not args:
+        if " " in exe:
+            args = exe.split(" ")
+            exe = args[0]
+            args = args.pop(0)
+            args = " ".join(args)
+        else:
+            args = ""
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", exe, args, None, 1)
+
+
 def create_cmd_hotkey():
     shortcut_script = [
         "Set oWS = WScript.CreateObject(\"WScript.Shell\")\n",
@@ -67,14 +81,14 @@ def create_cmd_hotkey():
 
 def set_registry_keys(os_version):
     # Disable wallpaper compression
-    os.system("reg.exe add \"HKCU\\Control Panel\\Desktop\" /f /v JPEGImportQuality /t REG_DWORD /d 100")
+    as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Control Panel\\Desktop\" /f /v JPEGImportQuality /t REG_DWORD /d 100")
 
     if os_version == 11:
         # Enable compact mode in explorer
-        os.system("reg.exe add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v UseCompactMode /t REG_DWORD /d 1")
+        as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v UseCompactMode /t REG_DWORD /d 1")
 
         # Enable legacy context menu
-        os.system("reg.exe add \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32\" /f /ve")
+        as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32\" /f /ve")
 
 
 def restart_explorer(tkwindow):
@@ -118,8 +132,8 @@ def get_row():
 
 
 def set_color_mode(desktop, apps):
-    os.system(f"reg.exe add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize\" /f /v SystemUsesLightTheme /t REG_DWORD /d {0 if desktop.get() == 1 else 1}")
-    os.system(f"reg.exe add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize\" /f /v AppsUseLightTheme /t REG_DWORD /d {0 if apps.get() == 1 else 1}")
+    as_admin("C:/Windows/System32/reg.exe", f"add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize\" /f /v SystemUsesLightTheme /t REG_DWORD /d {0 if desktop.get() == 1 else 1}")
+    as_admin(f"C:/Windows/System32/reg.exe", f"add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes\\Personalize\" /f /v AppsUseLightTheme /t REG_DWORD /d {0 if apps.get() == 1 else 1}")
 
 
 def install_apps(apps_to_install, textarea):
@@ -144,7 +158,7 @@ def interpret_apps_checkboxes(widgets):
 
 
 # GUI
-running_win_11 = tk.IntVar()
+running_win_11 = tk.IntVar(value=1 if sys.getwindowsversion().build >= 22000 else 0)
 
 container_frame = tk.Frame(main_window)
 container_frame.grid(row=0, padx=padx, pady=pady)
@@ -189,7 +203,7 @@ color_mode_apply_button.grid(row=2, padx=padx, pady=pady)
 
 
 apps_frame = tk.LabelFrame(container_frame, text=_("Applications"))
-apps_frame.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
+apps_frame.grid(sticky="e", row=0, rowspan=999, column=1, padx=padx, pady=pady)
 
 apps_gui_widgets = []
 
@@ -212,7 +226,4 @@ apps_install_button.grid(row=row_after_apps+2, padx=padx, pady=pady)
 
 
 if __name__ == "__main__":
-    if is_admin():
-        main_window.mainloop()
-    else:
-        ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+    main_window.mainloop()
