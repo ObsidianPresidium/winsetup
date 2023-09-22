@@ -26,4 +26,8 @@ class Optu:
             to_return = self.locale_dict[id]
             return to_return[1]
         elif type(string) == str:
-            return self.locale_dict_string_as_id[string][1]
+            try:
+                return self.locale_dict_string_as_id[string][1]
+            except KeyError:
+                print(f"Optu WARNING: No string matching \"{string}\" was found. Using untranslated string")
+                return string

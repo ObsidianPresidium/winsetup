@@ -19,8 +19,9 @@ apps = [
     ["Authy", "Twilio.Authy", 1],
     ["Notepad++", "Notepad++.Notepad++", 1],
     ["Python 3.11", "Python.Python.3.11", 1],
-    ["Simplenote", "Automattic.Simplenote", 1],
+    ["Modern Powershell", "Microsoft.Powershell", 1],
     ["Visual Studio Code", "Microsoft.VisualStudioCode", 1],
+    ["Simplenote", "Automattic.Simplenote", 1],
     ["Adobe Acrobat Reader DC", "Adobe.Acrobat.Reader.64-bit", 0]
 ]
 
@@ -35,7 +36,6 @@ else:
     _ = language.get_string
 
 main_window = tk.Tk()
-main_window.title(_("Winsetup Script"))
 padx = 8
 pady = 4
 current_row = 0
@@ -49,7 +49,8 @@ def is_admin():
 
 
 is_admin = is_admin()
-
+title = f"ADMIN: {_('Winsetup Script')}" if is_admin else _("Winsetup Script")
+main_window.title(title)
 
 def as_admin(exe, args=None):
     if not args:
@@ -60,7 +61,10 @@ def as_admin(exe, args=None):
             args = " ".join(args)
         else:
             args = ""
-    ctypes.windll.shell32.ShellExecuteW(None, "runas", exe, args, None, 1)
+    if is_admin:
+        os.system(exe + " " + args)
+    else:
+        ctypes.windll.shell32.ShellExecuteW(None, "runas", exe, args, None, 1)
 
 
 def create_cmd_hotkey():
@@ -83,6 +87,9 @@ def set_registry_keys(os_version):
     # Disable wallpaper compression
     as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Control Panel\\Desktop\" /f /v JPEGImportQuality /t REG_DWORD /d 100")
 
+    # Show file extensions
+    as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v HideFileExt /t REG_DWORD /d 0")
+
     if os_version == 11:
         # Enable compact mode in explorer
         as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v UseCompactMode /t REG_DWORD /d 1")
@@ -90,6 +97,8 @@ def set_registry_keys(os_version):
         # Enable legacy context menu
         as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32\" /f /ve")
 
+        # Disable Bing in start menu
+        as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Policies\\Microsoft\\Windows\\Explorer\" /f /v DisableSearchBoxSuggestions /t REG_DWORD /d 1")
 
 def restart_explorer(tkwindow):
     answer = tkmsg.askyesno(title=_("Restart explorer.exe"), parent=tkwindow, message=_("Are you sure you want to restart explorer.exe?\nRestarting explorer.exe will close all open explorer windows."))
@@ -117,13 +126,17 @@ def install_winget():
         while not check_winget():
             time.sleep(1)
     else:
-        print(_("Winget is already installed."))
+        tkmsg.showinfo(_("Winsetup Script"), _("Winget is already installed."))
 
     return 0
 
 
 def install_wsl():
     subprocess.Popen(["powershell", "wsl", "--install"])
+
+def relaunch_as_admin():
+    ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
+    exit(0)
 
 def get_row():
     global current_row
@@ -169,7 +182,7 @@ create_cmd_hotkey_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
 set_registry_keys_button = tk.Button(container_frame, text=_("Setup various registry keys"), command=lambda: set_registry_keys(11 if running_win_11.get() == 1 else 10))
 set_registry_keys_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
-set_registry_keys_tooltip = Hovertip(set_registry_keys_button, _("Disables wallpaper JPEG compression\nIf 'I'm running Windows 11' is checked, this will enable compact mode in Explorer, and the legacy context menu."))
+set_registry_keys_tooltip = Hovertip(set_registry_keys_button, _(6))
 set_registry_keys_checkbox = tk.Checkbutton(container_frame, text=_("I'm running Windows 11"), variable=running_win_11, onvalue=1, offvalue=0)
 set_registry_keys_checkbox.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
@@ -189,6 +202,10 @@ install_winget_tooltip = Hovertip(install_winget_button, _("Checks if winget is 
 install_wsl_button = tk.Button(container_frame, text=_("Install WSL"), command=install_wsl)
 install_wsl_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 install_wsl_tooltip = Hovertip(install_wsl_button, _("Installs Windows Subsystem for Linux with the default distro, Ubuntu LTS"))
+
+relaunch_as_admin_button = tk.Button(container_frame, text=_("Relaunch as administrator"), command=relaunch_as_admin)
+relaunch_as_admin_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
+relaunch_as_admin_tooltip = Hovertip(relaunch_as_admin_button, _("Relaunches winsetup as administrator, suppressing additional UAC prompts."))
 
 color_mode_frame = tk.LabelFrame(container_frame, text=_("Color mode"))
 color_mode_frame.grid(sticky="w", row=get_row(), padx=padx, pady=pady)

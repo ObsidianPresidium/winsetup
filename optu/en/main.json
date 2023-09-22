@@ -5,7 +5,7 @@
   "3": ["Winget is already installed.", "Winget is already installed."],
   "4": ["Enable keyboard shortcut for the command prompt", "Enable keyboard shortcut for the command prompt"],
   "5": ["Setup various registry keys", "Setup various registry keys"],
-  "6": ["Disables wallpaper JPEG compression\nIf 'I'm running Windows 11' is checked, this will enable compact mode in Explorer, and the legacy context menu.", "Disables wallpaper JPEG compression\nIf 'I'm running Windows 11' is checked, this will enable compact mode in Explorer, and the legacy context menu."],
+  "6": ["Disables wallpaper JPEG compression\nIf 'I'm running Windows 11' is checked, this will enable compact mode in Explorer, and the legacy context menu.", "Disables wallpaper JPEG compression, and un-hides file extensions\nIf 'I'm running Windows 11' is checked, this will enable compact mode in Explorer, the legacy context menu, and disable Bing in the start menu."],
   "7": ["I'm running Windows 11", "I'm running Windows 11"],
   "19": ["Open the UAC control panel", "Open the UAC control panel"],
   "8": ["Open display settings", "Open display settings"],
@@ -19,5 +19,8 @@
   "15": ["Apply this color mode", "Apply this color mode"],
   "16": ["Applications", "Applications"],
   "17": ["Additional Packages", "Additional Packages"],
-  "18": ["Install applications", "Install applications"]
+  "18": ["Install applications", "Install applications"],
+  "21": ["Relaunch as administrator", "Relaunch as administrator"],
+  "22": ["Relaunches winsetup as administrator, suppressing additional UAC prompts.", "Relaunches winsetup as administrator, suppressing additional UAC prompts."],
+  "23": ["Disable UAC", "Disable UAC"]
 }
