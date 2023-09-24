@@ -8,6 +8,7 @@ import tkinter.messagebox as tkmsg
 from idlelib.tooltip import Hovertip
 from optu import Optu
 import locale
+from threading import Timer
 
 pyversion = "3.11"
 
@@ -121,6 +122,10 @@ def open_display_settings():
     subprocess.Popen(["powershell", "Start-Process", "ms-settings:display"])
 
 
+def open_users_dialog():
+    as_admin("netplwiz")
+
+
 def check_winget():
     return os.path.exists(f"{os.getenv('LOCALAPPDATA')}/Microsoft/WindowsApps/winget.exe")
 
@@ -177,7 +182,7 @@ def interpret_apps_checkboxes(widgets):
     return final_list
 
 
-def create_alias(text_widget, file_name):
+def ensure_winsetup_dir():
     if not os.path.exists(winsetup_dir):
         os.mkdir(winsetup_dir)
     if not os.path.exists(winsetup_dir + "\\aliases"):
@@ -187,13 +192,49 @@ def create_alias(text_widget, file_name):
         os.environ["PATH"] += os.pathsep + os.path.join(winsetup_dir, "aliases")
         os.system(f"powershell setx PATH ((Get-ItemProperty HKCU:\\Environment).PATH + ';{winsetup_dir}\\aliases')")
 
-    lines = text_widget.get("1.0", "end-1c")
-    lines = lines.split("\n")
-    lines.insert(0, "@echo off")
-    for line in enumerate(lines):
-        lines[line[0]] = line[1] + "\n"
-    with open(winsetup_dir + f"\\aliases\\{file_name.get()}.bat", "w") as file:
-        file.writelines(lines)
+
+def alias_status_message(message, status_label):
+    def subroutine(message, status_label):
+        if status_label.cget("text") == message:
+            status_label.config(text = "")
+    timer = Timer(3.0, subroutine, (message, status_label))
+    status_label.config(text = message)
+    timer.start()
+
+
+
+def create_alias(text_widget, file_name, status_label):
+    ensure_winsetup_dir()
+
+    if os.path.exists(winsetup_dir + f"\\aliases\\{file_name.get()}.bat"):
+        answer = tkmsg.askyesno(_("Winsetup Script"), _("There already exists an alias with this name.\nAre you sure you want to replace it?"))
+        if not answer:
+            alias_status_message(_("Alias was not replaced"), status_label)
+            return 0
+    if file_name.get() == "":
+        alias_status_message(_("Alias name cannot be empty"), status_label)
+    else:
+        lines = text_widget.get("1.0", "end-1c")
+        lines = lines.split("\n")
+        lines.insert(0, "@echo off")
+        for line in enumerate(lines):
+            lines[line[0]] = line[1] + "\n"
+        with open(winsetup_dir + f"\\aliases\\{file_name.get()}.bat", "w") as file:
+            file.writelines(lines)
+            alias_status_message(_("Success! Alias was written"), status_label)
+
+def delete_alias(file_name, status_label):
+    ensure_winsetup_dir()
+    alias_path = winsetup_dir + f"\\aliases\\{file_name.get()}.bat"
+    if os.path.exists(alias_path):
+        answer = tkmsg.askyesno(_("Winsetup Script"), _("Are you sure you want to permanently delete this alias?"))
+        if answer:
+                os.remove(alias_path)
+                alias_status_message(_("Alias was deleted"), status_label)
+    else:
+        alias_status_message(_("Could not find alias"), status_label)
+
+
 
 # GUI
 running_win_11 = tk.IntVar(value=1 if sys.getwindowsversion().build >= 22000 else 0)
@@ -221,6 +262,9 @@ open_uac_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 open_display_settings_button = tk.Button(default_container_frame, text=_("Open display settings"), command=open_display_settings)
 open_display_settings_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
+open_users_dialog_button = tk.Button(default_container_frame, text=_("Open Users dialog"), command=open_users_dialog)
+open_users_dialog_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
+
 install_winget_button = tk.Button(default_container_frame, text=_("Install Winget"), command=install_winget)
 install_winget_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 install_winget_tooltip = Hovertip(install_winget_button, _("Checks if winget is installed, and if not, this opens a window, which lets you install it."))
@@ -235,6 +279,7 @@ relaunch_as_admin_tooltip = Hovertip(relaunch_as_admin_button, _("Relaunches win
 
 switch_scene_alias_button = tk.Button(default_container_frame, text=_("Create Command Alias"), command=lambda: set_scene("alias"))
 switch_scene_alias_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
+switch_scene_alias_tooltip = Hovertip(switch_scene_alias_button, _("A wizard which lets you create aliases on the command-line."))
 
 color_mode_frame = tk.LabelFrame(default_container_frame, text=_("Color mode"))
 color_mode_frame.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
@@ -276,12 +321,16 @@ alias_file_name_label = tk.Label(alias_container_frame, text=_("Alias Name"))
 alias_file_name_label.grid(row=0, padx=padx, pady=pady)
 alias_file_name_entry = tk.Entry(alias_container_frame, textvariable=alias_file_name)
 alias_file_name_entry.grid(row=1, padx=padx, pady=pady)
+alias_status_label = tk.Label(alias_container_frame, text="")
+alias_status_label.grid(row=0, rowspan=2, column=1, padx=padx, pady=pady)
 alias_create_alias_text = tk.Text(alias_container_frame, width=50, height=10)
-alias_create_alias_text.grid(row=2, columnspan=2, padx=padx, pady=pady)
+alias_create_alias_text.grid(row=2, columnspan=3, padx=padx, pady=pady)
 alias_back_button = tk.Button(alias_container_frame, text=_("Back"), command=lambda: set_scene("default"))
 alias_back_button.grid(row=3, padx=padx, pady=pady)
-alias_create_alias_button = tk.Button(alias_container_frame, text=_("Save Alias to Path"), command=lambda: create_alias(alias_create_alias_text, alias_file_name))
-alias_create_alias_button.grid(row=3, column=1, padx=padx, pady=pady)
+alias_delete_button = tk.Button(alias_container_frame, text=_("Delete"), command=lambda: delete_alias(alias_file_name, alias_status_label))
+alias_delete_button.grid(row=3, column=1, padx=padx, pady=pady)
+alias_create_alias_button = tk.Button(alias_container_frame, text=_("Save Alias to Path"), command=lambda: create_alias(alias_create_alias_text, alias_file_name, alias_status_label))
+alias_create_alias_button.grid(row=3, column=2, padx=padx, pady=pady)
 
 
 def set_scene(scene_name="default"):

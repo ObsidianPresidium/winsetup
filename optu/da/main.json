@@ -22,5 +22,19 @@
   "18": ["Install applications", "Installér programmer"],
   "21": ["Relaunch as administrator", "Kør winsetup som admin"],
   "22": ["Relaunches winsetup as administrator, suppressing additional UAC prompts.", "Genstarter winsetup som administrator, og undertrykker derved øvrige UAC-prompter."],
-  "23": ["Disable UAC", "Deaktivér UAC"]
+  "23": ["Disable UAC", "Deaktivér UAC"],
+  "24": ["Create Command Alias", "Lav et kommandoalias"],
+  "25": ["A wizard which lets you create aliases on the command-line.", "En guide, hvor man kan lave kommandoaliaser til kommandolinjen"],
+  "26": ["Create Alias", "Lav alias"],
+  "27": ["Alias Name", "Navn på alias"],
+  "28": ["Back", "Tilbage"],
+  "29": ["Delete", "Slet"],
+  "30": ["Save Alias to Path", "Gem alias"],
+  "31": ["Success! Alias was written", "Aliaset blev lavet"],
+  "32": ["Alias was deleted", "Aliaset blev slettet"],
+  "33": ["There already exists an alias with this name.\nAre you sure you want to replace it?", "Der findes allerede et alias med dette navn.\nEr du sikker på, at du vil erstatte det?"],
+  "34": ["Alias was not replaced", "Aliaset blev ikke erstattet"],
+  "35": ["Are you sure you want to permanently delete this alias?", "Er du sikker på at du vil slette dette alias permanent?"],
+  "36": ["Could not find alias", "Fandt intet alias med dette navn"],
+  "37": ["Open Users dialog", "Åbn Brugerkonti-guiden"]
 }
