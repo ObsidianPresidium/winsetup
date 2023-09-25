@@ -207,7 +207,7 @@ def create_alias(text_widget, file_name, status_label):
     ensure_winsetup_dir()
 
     if os.path.exists(winsetup_dir + f"\\aliases\\{file_name.get()}.bat"):
-        answer = tkmsg.askyesno(_("Winsetup Script"), _("There already exists an alias with this name.\nAre you sure you want to replace it?"))
+        answer = tkmsg.askyesno(_("Winsetup Script"), _("There already exists an alias with the name '%s'.\nAre you sure you want to replace it?", f=[file_name.get()]))
         if not answer:
             alias_status_message(_("Alias was not replaced"), status_label)
             return 0
@@ -221,7 +221,7 @@ def create_alias(text_widget, file_name, status_label):
             lines[line[0]] = line[1] + "\n"
         with open(winsetup_dir + f"\\aliases\\{file_name.get()}.bat", "w") as file:
             file.writelines(lines)
-            alias_status_message(_("Success! Alias was written"), status_label)
+            alias_status_message(_("Success! Alias '%s' was written", f=[file_name.get()]), status_label)
 
 def delete_alias(file_name, status_label):
     ensure_winsetup_dir()
@@ -321,7 +321,7 @@ alias_file_name_label = tk.Label(alias_container_frame, text=_("Alias Name"))
 alias_file_name_label.grid(row=0, padx=padx, pady=pady)
 alias_file_name_entry = tk.Entry(alias_container_frame, textvariable=alias_file_name)
 alias_file_name_entry.grid(row=1, padx=padx, pady=pady)
-alias_status_label = tk.Label(alias_container_frame, text="")
+alias_status_label = tk.Label(alias_container_frame, text="", width=20)
 alias_status_label.grid(row=0, rowspan=2, column=1, padx=padx, pady=pady)
 alias_create_alias_text = tk.Text(alias_container_frame, width=50, height=10)
 alias_create_alias_text.grid(row=2, columnspan=3, padx=padx, pady=pady)
