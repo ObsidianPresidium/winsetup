@@ -30,11 +30,13 @@
   "28": ["Back", "Back"],
   "29": ["Delete", "Delete"],
   "30": ["Save Alias to Path", "Save Alias to Path"],
-  "31": ["Success! Alias was written", "Success! Alias was written"],
+  "31": ["Success! Alias '%s' was written", "Success! Alias '%s' was written"],
   "32": ["Alias was deleted", "Alias was deleted"],
-  "33": ["There already exists an alias with this name.\nAre you sure you want to replace it?", "There already exists an alias with this name.\nAre you sure you want to replace it?"],
+  "33": ["There already exists an alias with the name '%s'.\nAre you sure you want to replace it?", "There already exists an alias with the name '%s'.\nAre you sure you want to replace it?"],
   "34": ["Alias was not replaced", "Alias was not replaced"],
   "35": ["Are you sure you want to permanently delete this alias?", "Are you sure you want to permanently delete this alias?"],
   "36": ["Could not find alias", "Could not find alias"],
-  "37": ["Open Users dialog", "Open Users dialog"]
+  "37": ["Open Users dialog", "Open Users dialog"],
+  "38": ["This is a test of formatted strings. It is %s percent cool.", "This is a test of formatted strings. It is %s percent cool."],
+  "39": ["This is a test of normal strings.", "This is a test of normal strings."]
 }
