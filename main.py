@@ -8,6 +8,7 @@ import tkinter.messagebox as tkmsg
 from idlelib.tooltip import Hovertip
 from optu import Optu
 import locale
+from threading import Timer
 
 pyversion = "3.11"
 
@@ -25,6 +26,8 @@ apps = [
     ["Adobe Acrobat Reader DC", "Adobe.Acrobat.Reader.64-bit", 0]
 ]
 
+default_widgets = []
+winsetup_dir = os.getenv("APPDATA") + "\\winsetup"
 windll = ctypes.windll.kernel32
 iso_language = locale.windows_locale[windll.GetUserDefaultUILanguage()]
 
@@ -51,6 +54,7 @@ def is_admin():
 is_admin = is_admin()
 title = f"ADMIN: {_('Winsetup Script')}" if is_admin else _("Winsetup Script")
 main_window.title(title)
+
 
 def as_admin(exe, args=None):
     if not args:
@@ -100,6 +104,7 @@ def set_registry_keys(os_version):
         # Disable Bing in start menu
         as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Policies\\Microsoft\\Windows\\Explorer\" /f /v DisableSearchBoxSuggestions /t REG_DWORD /d 1")
 
+
 def restart_explorer(tkwindow):
     answer = tkmsg.askyesno(title=_("Restart explorer.exe"), parent=tkwindow, message=_("Are you sure you want to restart explorer.exe?\nRestarting explorer.exe will close all open explorer windows."))
     if not answer:
@@ -108,12 +113,17 @@ def restart_explorer(tkwindow):
     os.system("taskkill /f /im explorer.exe")
     subprocess.Popen(["C:/Windows/explorer.exe"])
 
+
 def open_uac():
     subprocess.Popen(["C:/Windows/System32/UserAccountControlSettings.exe"])
 
 
 def open_display_settings():
     subprocess.Popen(["powershell", "Start-Process", "ms-settings:display"])
+
+
+def open_users_dialog():
+    as_admin("netplwiz")
 
 
 def check_winget():
@@ -134,9 +144,11 @@ def install_winget():
 def install_wsl():
     subprocess.Popen(["powershell", "wsl", "--install"])
 
+
 def relaunch_as_admin():
     ctypes.windll.shell32.ShellExecuteW(None, "runas", sys.executable, " ".join(sys.argv), None, 1)
     exit(0)
+
 
 def get_row():
     global current_row
@@ -170,44 +182,106 @@ def interpret_apps_checkboxes(widgets):
     return final_list
 
 
+def ensure_winsetup_dir():
+    if not os.path.exists(winsetup_dir):
+        os.mkdir(winsetup_dir)
+    if not os.path.exists(winsetup_dir + "\\aliases"):
+        os.mkdir(winsetup_dir + "\\aliases")
+
+    if not "winsetup" in os.environ["PATH"]:
+        os.environ["PATH"] += os.pathsep + os.path.join(winsetup_dir, "aliases")
+        os.system(f"powershell setx PATH ((Get-ItemProperty HKCU:\\Environment).PATH + ';{winsetup_dir}\\aliases')")
+
+
+def alias_status_message(message, status_label):
+    def subroutine(message, status_label):
+        if status_label.cget("text") == message:
+            status_label.config(text = "")
+    timer = Timer(3.0, subroutine, (message, status_label))
+    status_label.config(text = message)
+    timer.start()
+
+
+
+def create_alias(text_widget, file_name, status_label):
+    ensure_winsetup_dir()
+
+    if os.path.exists(winsetup_dir + f"\\aliases\\{file_name.get()}.bat"):
+        answer = tkmsg.askyesno(_("Winsetup Script"), _("There already exists an alias with the name '%s'.\nAre you sure you want to replace it?", f=[file_name.get()]))
+        if not answer:
+            alias_status_message(_("Alias was not replaced"), status_label)
+            return 0
+    if file_name.get() == "":
+        alias_status_message(_("Alias name cannot be empty"), status_label)
+    else:
+        lines = text_widget.get("1.0", "end-1c")
+        lines = lines.split("\n")
+        lines.insert(0, "@echo off")
+        for line in enumerate(lines):
+            lines[line[0]] = line[1] + "\n"
+        with open(winsetup_dir + f"\\aliases\\{file_name.get()}.bat", "w") as file:
+            file.writelines(lines)
+            alias_status_message(_("Success! Alias '%s' was written", f=[file_name.get()]), status_label)
+
+def delete_alias(file_name, status_label):
+    ensure_winsetup_dir()
+    alias_path = winsetup_dir + f"\\aliases\\{file_name.get()}.bat"
+    if os.path.exists(alias_path):
+        answer = tkmsg.askyesno(_("Winsetup Script"), _("Are you sure you want to permanently delete this alias?"))
+        if answer:
+                os.remove(alias_path)
+                alias_status_message(_("Alias was deleted"), status_label)
+    else:
+        alias_status_message(_("Could not find alias"), status_label)
+
+
+
 # GUI
 running_win_11 = tk.IntVar(value=1 if sys.getwindowsversion().build >= 22000 else 0)
+alias_file_name = tk.StringVar()
 
-container_frame = tk.Frame(main_window)
-container_frame.grid(row=0, padx=padx, pady=pady)
-container_frame.pack(fill="both", expand=True, padx=padx, pady=pady)
+default_container_frame = tk.Frame(main_window)
+default_container_frame.grid(row=0, padx=padx, pady=pady)
+# default_container_frame.pack(fill="both", expand=True, padx=padx, pady=pady)
 
-create_cmd_hotkey_button = tk.Button(container_frame, text=_("Enable keyboard shortcut for the command prompt"), command=create_cmd_hotkey)
+create_cmd_hotkey_button = tk.Button(default_container_frame, text=_("Enable keyboard shortcut for the command prompt"), command=create_cmd_hotkey)
 create_cmd_hotkey_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
-set_registry_keys_button = tk.Button(container_frame, text=_("Setup various registry keys"), command=lambda: set_registry_keys(11 if running_win_11.get() == 1 else 10))
+set_registry_keys_button = tk.Button(default_container_frame, text=_("Setup various registry keys"), command=lambda: set_registry_keys(11 if running_win_11.get() == 1 else 10))
 set_registry_keys_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 set_registry_keys_tooltip = Hovertip(set_registry_keys_button, _(6))
-set_registry_keys_checkbox = tk.Checkbutton(container_frame, text=_("I'm running Windows 11"), variable=running_win_11, onvalue=1, offvalue=0)
+set_registry_keys_checkbox = tk.Checkbutton(default_container_frame, text=_("I'm running Windows 11"), variable=running_win_11, onvalue=1, offvalue=0)
 set_registry_keys_checkbox.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
-restart_explorer_button = tk.Button(container_frame, text=_("Restart explorer.exe"), command=lambda: restart_explorer(main_window))
+restart_explorer_button = tk.Button(default_container_frame, text=_("Restart explorer.exe"), command=lambda: restart_explorer(main_window))
 restart_explorer_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
-open_uac_button = tk.Button(container_frame, text=_("Open the UAC control panel"), command=open_uac)
+open_uac_button = tk.Button(default_container_frame, text=_("Open the UAC control panel"), command=open_uac)
 open_uac_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
-open_display_settings_button = tk.Button(container_frame, text=_("Open display settings"), command=open_display_settings)
+open_display_settings_button = tk.Button(default_container_frame, text=_("Open display settings"), command=open_display_settings)
 open_display_settings_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
-install_winget_button = tk.Button(container_frame, text=_("Install Winget"), command=install_winget)
+open_users_dialog_button = tk.Button(default_container_frame, text=_("Open Users dialog"), command=open_users_dialog)
+open_users_dialog_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
+
+install_winget_button = tk.Button(default_container_frame, text=_("Install Winget"), command=install_winget)
 install_winget_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 install_winget_tooltip = Hovertip(install_winget_button, _("Checks if winget is installed, and if not, this opens a window, which lets you install it."))
 
-install_wsl_button = tk.Button(container_frame, text=_("Install WSL"), command=install_wsl)
+install_wsl_button = tk.Button(default_container_frame, text=_("Install WSL"), command=install_wsl)
 install_wsl_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 install_wsl_tooltip = Hovertip(install_wsl_button, _("Installs Windows Subsystem for Linux with the default distro, Ubuntu LTS"))
 
-relaunch_as_admin_button = tk.Button(container_frame, text=_("Relaunch as administrator"), command=relaunch_as_admin)
+relaunch_as_admin_button = tk.Button(default_container_frame, text=_("Relaunch as administrator"), command=relaunch_as_admin)
 relaunch_as_admin_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 relaunch_as_admin_tooltip = Hovertip(relaunch_as_admin_button, _("Relaunches winsetup as administrator, suppressing additional UAC prompts."))
 
-color_mode_frame = tk.LabelFrame(container_frame, text=_("Color mode"))
+switch_scene_alias_button = tk.Button(default_container_frame, text=_("Create Command Alias"), command=lambda: set_scene("alias"))
+switch_scene_alias_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
+switch_scene_alias_tooltip = Hovertip(switch_scene_alias_button, _("A wizard which lets you create aliases on the command-line."))
+
+color_mode_frame = tk.LabelFrame(default_container_frame, text=_("Color mode"))
 color_mode_frame.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 color_mode_integer_desktop = tk.IntVar(value=1)
 color_mode_checkbox_desktop = tk.Checkbutton(color_mode_frame, text=_("Enable dark mode for the desktop"), variable=color_mode_integer_desktop, onvalue=1, offvalue=0)
@@ -218,8 +292,7 @@ color_mode_checkbox_apps.grid(sticky="w", row=1, padx=padx, pady=pady)
 color_mode_apply_button = tk.Button(color_mode_frame, text=_("Apply this color mode"), command=lambda: set_color_mode(color_mode_integer_desktop, color_mode_integer_apps))
 color_mode_apply_button.grid(row=2, padx=padx, pady=pady)
 
-
-apps_frame = tk.LabelFrame(container_frame, text=_("Applications"))
+apps_frame = tk.LabelFrame(default_container_frame, text=_("Applications"))
 apps_frame.grid(sticky="e", row=0, rowspan=999, column=1, padx=padx, pady=pady)
 
 apps_gui_widgets = []
@@ -236,10 +309,37 @@ row_after_apps = len(apps_gui_widgets)
 additional_packages_label = tk.Label(apps_frame, text=_("Additional Packages"))
 additional_packages_label.grid(row=row_after_apps, padx=padx, pady=pady)
 additional_packages_area = tk.Text(apps_frame, height=5, width=30, wrap="none")
-additional_packages_area.grid(sticky="w", row=row_after_apps+1, padx=padx, pady=pady)
+additional_packages_area.grid(sticky="w", row=row_after_apps + 1, padx=padx, pady=pady)
 
 apps_install_button = tk.Button(apps_frame, text=_("Install applications"), command=lambda: install_apps(interpret_apps_checkboxes(apps_gui_widgets), additional_packages_area))
-apps_install_button.grid(row=row_after_apps+2, padx=padx, pady=pady)
+apps_install_button.grid(row=row_after_apps + 2, padx=padx, pady=pady)
+
+default_widgets = default_container_frame.winfo_children().copy()
+
+alias_container_frame = tk.LabelFrame(main_window, text=_("Create Alias"))
+alias_file_name_label = tk.Label(alias_container_frame, text=_("Alias Name"))
+alias_file_name_label.grid(row=0, padx=padx, pady=pady)
+alias_file_name_entry = tk.Entry(alias_container_frame, textvariable=alias_file_name)
+alias_file_name_entry.grid(row=1, padx=padx, pady=pady)
+alias_status_label = tk.Label(alias_container_frame, text="", width=20)
+alias_status_label.grid(row=0, rowspan=2, column=1, padx=padx, pady=pady)
+alias_create_alias_text = tk.Text(alias_container_frame, width=50, height=10)
+alias_create_alias_text.grid(row=2, columnspan=3, padx=padx, pady=pady)
+alias_back_button = tk.Button(alias_container_frame, text=_("Back"), command=lambda: set_scene("default"))
+alias_back_button.grid(row=3, padx=padx, pady=pady)
+alias_delete_button = tk.Button(alias_container_frame, text=_("Delete"), command=lambda: delete_alias(alias_file_name, alias_status_label))
+alias_delete_button.grid(row=3, column=1, padx=padx, pady=pady)
+alias_create_alias_button = tk.Button(alias_container_frame, text=_("Save Alias to Path"), command=lambda: create_alias(alias_create_alias_text, alias_file_name, alias_status_label))
+alias_create_alias_button.grid(row=3, column=2, padx=padx, pady=pady)
+
+
+def set_scene(scene_name="default"):
+    if scene_name == "default":
+        alias_container_frame.grid_remove()
+        default_container_frame.grid()
+    if scene_name == "alias":
+        default_container_frame.grid_remove()
+        alias_container_frame.grid(row=0, padx=padx, pady=pady)
 
 
 if __name__ == "__main__":

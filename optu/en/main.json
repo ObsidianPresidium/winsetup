@@ -22,5 +22,19 @@
   "18": ["Install applications", "Install applications"],
   "21": ["Relaunch as administrator", "Relaunch as administrator"],
   "22": ["Relaunches winsetup as administrator, suppressing additional UAC prompts.", "Relaunches winsetup as administrator, suppressing additional UAC prompts."],
-  "23": ["Disable UAC", "Disable UAC"]
+  "23": ["Disable UAC", "Disable UAC"],
+  "24": ["Create Command Alias", "Create Command Alias"],
+  "25": ["A wizard which lets you create aliases on the command-line.", "A wizard which lets you create aliases on the command-line."],
+  "26": ["Create Alias", "Create Alias"],
+  "27": ["Alias Name", "Alias Name"],
+  "28": ["Back", "Back"],
+  "29": ["Delete", "Delete"],
+  "30": ["Save Alias to Path", "Save Alias to Path"],
+  "31": ["Success! Alias was written", "Success! Alias was written"],
+  "32": ["Alias was deleted", "Alias was deleted"],
+  "33": ["There already exists an alias with this name.\nAre you sure you want to replace it?", "There already exists an alias with this name.\nAre you sure you want to replace it?"],
+  "34": ["Alias was not replaced", "Alias was not replaced"],
+  "35": ["Are you sure you want to permanently delete this alias?", "Are you sure you want to permanently delete this alias?"],
+  "36": ["Could not find alias", "Could not find alias"],
+  "37": ["Open Users dialog", "Open Users dialog"]
 }
