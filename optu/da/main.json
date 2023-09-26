@@ -35,8 +35,11 @@
   "33": ["There already exists an alias with the name '%s'.\nAre you sure you want to replace it?", "Der findes allerede et alias med navnet '%s'.\nEr du sikker på, at du vil erstatte det?"],
   "34": ["Alias was not replaced", "Aliaset blev ikke erstattet"],
   "35": ["Are you sure you want to permanently delete this alias?", "Er du sikker på at du vil slette dette alias permanent?"],
-  "36": ["Could not find alias", "Fandt intet alias med dette navn"],
+  "36": ["Could not find alias", "Fandt intet alias med\ndette navn"],
   "37": ["Open Users dialog", "Åbn Brugerkonti-guiden"],
   "38": ["This is a test of formatted strings. It is %s percent cool.", "Dette er en test af formatterede strings. Det er %s procent cool."],
-  "39": ["This is a test of normal strings.", "Dette er en test af en normal string."]
+  "39": ["This is a test of normal strings.", "Dette er en test af en normal string."],
+  "40": ["New Alias", "Nyt alias"],
+  "41": ["Opened alias %s", "Åbner %s-aliaset"],
+  "42": ["Editing new alias", "Redigerer et nyt alias"]
 }

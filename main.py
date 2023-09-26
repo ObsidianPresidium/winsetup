@@ -38,6 +38,8 @@ else:
     language = Optu()
     _ = language.get_string
 
+alias_select_file_options = [_("New Alias")]
+
 main_window = tk.Tk()
 padx = 8
 pady = 4
@@ -202,7 +204,6 @@ def alias_status_message(message, status_label):
     timer.start()
 
 
-
 def create_alias(text_widget, file_name, status_label):
     ensure_winsetup_dir()
 
@@ -223,22 +224,64 @@ def create_alias(text_widget, file_name, status_label):
             file.writelines(lines)
             alias_status_message(_("Success! Alias '%s' was written", f=[file_name.get()]), status_label)
 
+        update_file_selector(file_name.get())
+
 def delete_alias(file_name, status_label):
     ensure_winsetup_dir()
     alias_path = winsetup_dir + f"\\aliases\\{file_name.get()}.bat"
     if os.path.exists(alias_path):
         answer = tkmsg.askyesno(_("Winsetup Script"), _("Are you sure you want to permanently delete this alias?"))
         if answer:
-                os.remove(alias_path)
-                alias_status_message(_("Alias was deleted"), status_label)
+            os.remove(alias_path)
+            alias_status_message(_("Alias was deleted"), status_label)
+            update_file_selector(_("New Alias"))
     else:
         alias_status_message(_("Could not find alias"), status_label)
+
+def alias_get_files():
+    ensure_winsetup_dir()
+    mylist = os.listdir(winsetup_dir + f"\\aliases\\")
+    for file in enumerate(mylist):
+        mylist[file[0]] = file[1].replace(".bat", "")
+    return mylist
+
+
+def alias_get_file(selected_file, file_name, text_area, status_log):
+    if not type(selected_file) == str:
+        selected_file = selected_file.get()
+    if selected_file == _("New Alias"):
+        file_name.set("")
+        alias_status_message(_("Editing new alias"), status_log)
+    else:
+        with open(f"{winsetup_dir}\\aliases\\{selected_file}.bat") as file:
+            lines = file.readlines()
+        string = ""
+        for line in enumerate(lines):
+            if line[0] > 0:
+                string += line[1]
+        string = string[0:-1]
+        text_area.delete("1.0", "end")
+        text_area.insert("1.0", string)
+        file_name.set(selected_file)
+        alias_status_message(_("Opened alias %s", f=[selected_file]), status_log)
+
+
+def update_file_selector(new_selected):
+    global alias_existing_aliases
+    global alias_select_file_options
+    global alias_selected_file
+    del alias_existing_aliases
+    alias_select_file_options = [_("New Alias")] + alias_get_files()
+    alias_selected_file.set(new_selected)
+    alias_existing_aliases = tk.OptionMenu(alias_top_frame, alias_selected_file, *alias_select_file_options, command=lambda x: alias_get_file(alias_selected_file, alias_file_name, alias_create_alias_text, alias_status_label))
+    alias_existing_aliases.grid(sticky="e", row=0, column=1, padx=padx, pady=pady)
 
 
 
 # GUI
 running_win_11 = tk.IntVar(value=1 if sys.getwindowsversion().build >= 22000 else 0)
 alias_file_name = tk.StringVar()
+alias_selected_file = tk.StringVar()
 
 default_container_frame = tk.Frame(main_window)
 default_container_frame.grid(row=0, padx=padx, pady=pady)
@@ -316,20 +359,31 @@ apps_install_button.grid(row=row_after_apps + 2, padx=padx, pady=pady)
 
 default_widgets = default_container_frame.winfo_children().copy()
 
+alias_select_file_options += alias_get_files()
+alias_selected_file.set(_("New Alias"))
+
 alias_container_frame = tk.LabelFrame(main_window, text=_("Create Alias"))
-alias_file_name_label = tk.Label(alias_container_frame, text=_("Alias Name"))
-alias_file_name_label.grid(row=0, padx=padx, pady=pady)
-alias_file_name_entry = tk.Entry(alias_container_frame, textvariable=alias_file_name)
-alias_file_name_entry.grid(row=1, padx=padx, pady=pady)
-alias_status_label = tk.Label(alias_container_frame, text="", width=20)
-alias_status_label.grid(row=0, rowspan=2, column=1, padx=padx, pady=pady)
-alias_create_alias_text = tk.Text(alias_container_frame, width=50, height=10)
-alias_create_alias_text.grid(row=2, columnspan=3, padx=padx, pady=pady)
-alias_back_button = tk.Button(alias_container_frame, text=_("Back"), command=lambda: set_scene("default"))
+alias_top_frame = tk.Frame(alias_container_frame)
+alias_top_frame.grid(sticky="w", padx=padx, pady=pady)
+alias_file_name_entry = tk.Entry(textvariable=alias_file_name, master=alias_top_frame)
+alias_file_name_entry.grid(sticky="w", row=0, column=0, padx=padx, pady=pady)
+alias_existing_aliases = tk.OptionMenu(alias_top_frame, alias_selected_file, *alias_select_file_options, command=lambda x: alias_get_file(alias_selected_file, alias_file_name, alias_create_alias_text, alias_status_label))
+alias_existing_aliases.grid(sticky="e", row=0, column=1, padx=padx, pady=pady)
+
+alias_middle_frame = tk.Frame(alias_container_frame)
+alias_middle_frame.grid(row=1, padx=padx, pady=pady)
+alias_create_alias_text = tk.Text(alias_middle_frame, width=30, height=10)
+alias_create_alias_text.grid(row=0, padx=padx, pady=pady)
+alias_status_label = tk.Label(alias_middle_frame, text="", width=20)
+alias_status_label.grid(row=0, column=1, padx=padx, pady=pady)
+
+alias_bottom_frame = tk.Frame(alias_container_frame)
+alias_bottom_frame.grid(sticky="e", row=2, padx=padx, pady=pady)
+alias_back_button = tk.Button(alias_bottom_frame, text=_("Back"), command=lambda: set_scene("default"))
 alias_back_button.grid(row=3, padx=padx, pady=pady)
-alias_delete_button = tk.Button(alias_container_frame, text=_("Delete"), command=lambda: delete_alias(alias_file_name, alias_status_label))
+alias_delete_button = tk.Button(alias_bottom_frame, text=_("Delete"), command=lambda: delete_alias(alias_file_name, alias_status_label))
 alias_delete_button.grid(row=3, column=1, padx=padx, pady=pady)
-alias_create_alias_button = tk.Button(alias_container_frame, text=_("Save Alias to Path"), command=lambda: create_alias(alias_create_alias_text, alias_file_name, alias_status_label))
+alias_create_alias_button = tk.Button(alias_bottom_frame, text=_("Save Alias to Path"), command=lambda: create_alias(alias_create_alias_text, alias_file_name, alias_status_label))
 alias_create_alias_button.grid(row=3, column=2, padx=padx, pady=pady)
 
 

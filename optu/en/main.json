@@ -38,5 +38,8 @@
   "36": ["Could not find alias", "Could not find alias"],
   "37": ["Open Users dialog", "Open Users dialog"],
   "38": ["This is a test of formatted strings. It is %s percent cool.", "This is a test of formatted strings. It is %s percent cool."],
-  "39": ["This is a test of normal strings.", "This is a test of normal strings."]
+  "39": ["This is a test of normal strings.", "This is a test of normal strings."],
+  "40": ["New Alias", "New Alias"],
+  "41": ["Opened alias %s", "Opened alias %s"],
+  "42": ["Editing new alias", "Editing new alias"]
 }
