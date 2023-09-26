@@ -87,6 +87,7 @@ def create_cmd_hotkey():
         file.writelines(shortcut_script)
 
     os.system(script_location)
+    os.remove(script_location)
 
 
 def set_registry_keys(os_version):
