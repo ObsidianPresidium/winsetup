@@ -41,5 +41,6 @@
   "39": ["This is a test of normal strings.", "Dette er en test af en normal string."],
   "40": ["New Alias", "Nyt alias"],
   "41": ["Opened alias %s", "Åbner %s-aliaset"],
-  "42": ["Editing new alias", "Redigerer et nyt alias"]
+  "42": ["Editing new alias", "Redigerer et nyt alias"],
+  "43": ["Disable keyboard shortcut for the command prompt", "Deaktivér tastaturgenvej til kommandoprompten"]
 }
