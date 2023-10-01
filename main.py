@@ -40,6 +40,10 @@ else:
 
 alias_select_file_options = [_("New Alias")]
 
+toggles = {
+    "cmd_hotkey": os.path.exists(os.getenv("USERPROFILE") + "\\Desktop\\cmd.lnk")
+}
+
 main_window = tk.Tk()
 padx = 8
 pady = 4
@@ -73,39 +77,53 @@ def as_admin(exe, args=None):
         ctypes.windll.shell32.ShellExecuteW(None, "runas", exe, args, None, 1)
 
 
-def create_cmd_hotkey():
+def create_hotkey(target, shortcut_name, hotkey, start_in=None, remove=False):
     shortcut_script = [
         "Set oWS = WScript.CreateObject(\"WScript.Shell\")\n",
-        f"sLinkFile = \"{os.getenv('USERPROFILE')}\\Desktop\\cmd.lnk\"\n",
+        f"sLinkFile = \"{os.getenv('USERPROFILE')}\\Desktop\\{shortcut_name}.lnk\"\n",
         "Set oLink = oWS.CreateShortcut(sLinkFile)\n",
-        "oLink.TargetPath = \"C:\\Windows\\System32\\cmd.exe\"\n",
-        "oLink.Hotkey = \"Ctrl+Alt+t\"\n",
-        "oLink.Save()"
+        f"oLink.TargetPath = \"{target}\"\n",
     ]
-    script_location = f"{os.getenv('TEMP')}/create_cmd_hotkey.vbs"
+    if start_in:
+        shortcut_script += [f"oLink.WorkingDirectory = \"{start_in}\"\n"]
+
+    shortcut_script += [f"oLink.Hotkey = \"{hotkey}\"\n", "oLink.Save()"]
+    script_location = f"{os.getenv('TEMP')}/tempscript_{shortcut_name}.vbs"
     with open(script_location, "w") as file:
         file.writelines(shortcut_script)
 
     os.system(script_location)
     os.remove(script_location)
+    os.system(f"attrib +H \"{os.getenv('USERPROFILE')}\\Desktop\\{shortcut_name}.lnk\"")
+
+def create_cmd_hotkey():
+    global create_cmd_hotkey_button
+    if not toggles["cmd_hotkey"]:
+        create_hotkey("C:\\Windows\\System32\\cmd.exe", "cmd", "Ctrl+alt+t", os.getenv("USERPROFILE"))
+        create_cmd_hotkey_button.configure(text=_("Disable keyboard shortcut for the command prompt"))
+        toggles["cmd_hotkey"] = True
+    else:
+        os.remove(os.getenv("USERPROFILE") + "\\Desktop\\cmd.lnk")
+        create_cmd_hotkey_button.configure(text=_("Enable keyboard shortcut for the command prompt"))
+        toggles["cmd_hotkey"] = False
 
 
 def set_registry_keys(os_version):
     # Disable wallpaper compression
-    as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Control Panel\\Desktop\" /f /v JPEGImportQuality /t REG_DWORD /d 100")
+    as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Control Panel\\Desktop\" /f /v JPEGImportQuality /t REG_DWORD /d 100")  # value doesn't exist by default
 
     # Show file extensions
-    as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v HideFileExt /t REG_DWORD /d 0")
+    as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v HideFileExt /t REG_DWORD /d 0")  # default 1
 
     if os_version == 11:
         # Enable compact mode in explorer
-        as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v UseCompactMode /t REG_DWORD /d 1")
+        as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v UseCompactMode /t REG_DWORD /d 1")  # default 0
 
         # Enable legacy context menu
-        as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32\" /f /ve")
+        as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\\InprocServer32\" /f /ve")  # value doesn't exist by default
 
         # Disable Bing in start menu
-        as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Policies\\Microsoft\\Windows\\Explorer\" /f /v DisableSearchBoxSuggestions /t REG_DWORD /d 1")
+        as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Policies\\Microsoft\\Windows\\Explorer\" /f /v DisableSearchBoxSuggestions /t REG_DWORD /d 1")  #
 
 
 def restart_explorer(tkwindow):
@@ -288,7 +306,7 @@ default_container_frame = tk.Frame(main_window)
 default_container_frame.grid(row=0, padx=padx, pady=pady)
 # default_container_frame.pack(fill="both", expand=True, padx=padx, pady=pady)
 
-create_cmd_hotkey_button = tk.Button(default_container_frame, text=_("Enable keyboard shortcut for the command prompt"), command=create_cmd_hotkey)
+create_cmd_hotkey_button = tk.Button(default_container_frame, text=_("Disable keyboard shortcut for the command prompt") if toggles["cmd_hotkey"] else _("Enable keyboard shortcut for the command prompt"), command=create_cmd_hotkey)
 create_cmd_hotkey_button.grid(sticky="w", row=get_row(), padx=padx, pady=pady)
 
 set_registry_keys_button = tk.Button(default_container_frame, text=_("Setup various registry keys"), command=lambda: set_registry_keys(11 if running_win_11.get() == 1 else 10))
