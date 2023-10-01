@@ -19,6 +19,7 @@ apps = [
     ["7-Zip", "7zip.7zip", 1],
     ["Authy", "Twilio.Authy", 1],
     ["Notepad++", "Notepad++.Notepad++", 1],
+    ["GNU Nano", "GNU.Nano", 1],
     ["Python 3.11", "Python.Python.3.11", 1],
     ["Modern Powershell", "Microsoft.Powershell", 1],
     ["Visual Studio Code", "Microsoft.VisualStudioCode", 1],
