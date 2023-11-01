@@ -116,6 +116,8 @@ def set_registry_keys(os_version):
     # Show file extensions
     as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v HideFileExt /t REG_DWORD /d 0")  # default 1
 
+    as_admin("C:/Windows/System32/reg.exe", "add \"HKLM\\SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation\" /f /v RealTimeIsUniversal /t REG_DWORD /d 1") # default 0
+
     if os_version == 11:
         # Enable compact mode in explorer
         as_admin("C:/Windows/System32/reg.exe", "add \"HKCU\\Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\" /f /v UseCompactMode /t REG_DWORD /d 1")  # default 0
